@@ -35,6 +35,12 @@ builder.Services.AddTransient<ITipoMovilidad, AccesoDatos.Movilidad.TipoMovilida
 builder.Services.AddTransient<IConvenio, AccesoDatos.Movilidad.Convenios>();
 builder.Services.AddTransient<ITipoActividad, AccesoDatos.Movilidad.TipoActividad>();
 builder.Services.AddTransient<ITipoConvenio, AccesoDatos.Movilidad.TipoConvenio>();
+builder.Services.AddTransient<IInstitucion, AccesoDatos.Movilidad.Institucion>();
+builder.Services.AddTransient<IEntregable, AccesoDatos.Movilidad.Entregable>();
+builder.Services.AddTransient<IPais, AccesoDatos.Movilidad.Pais>();
+builder.Services.AddTransient<IConvocatoria, AccesoDatos.Movilidad.Convocatoria>();
+builder.Services.AddTransient<IPostulaciones, AccesoDatos.Movilidad.Postulacion>();
+
 
 builder.Services.AddAutoMapper(config => {
     config.RegisterApiMappings();
