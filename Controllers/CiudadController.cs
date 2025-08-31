@@ -21,11 +21,11 @@ namespace Apis.Controllers
         }
 
         #region Consultar Ciudad 
-        [HttpGet("Consultar_Ciudad")]
+        [HttpGet("Consultar_Ciudades")]
         [ProducesResponseType<DataResponse<List<CiudadDTO>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ConsultarCiudad()
+        public async Task<IActionResult> Consultar_Ciudades()
         {
             try
             {

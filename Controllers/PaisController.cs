@@ -1,7 +1,15 @@
 ﻿using Apis.Contrats;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ModeloDatos.DTO;
 using ModeloDatos.IModelos;
+using ModeloDatos.Modelos;
+using ModeloDatos.Utilidades;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Apis.Controllers
 {

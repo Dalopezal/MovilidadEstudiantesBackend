@@ -41,6 +41,14 @@ builder.Services.AddTransient<IPais, AccesoDatos.Movilidad.Pais>();
 builder.Services.AddTransient<IConvocatoria, AccesoDatos.Movilidad.Convocatoria>();
 builder.Services.AddTransient<IPostulaciones, AccesoDatos.Movilidad.Postulacion>();
 
+builder.Services.AddTransient<IFinanciacionUCM, AccesoDatos.Movilidad.FinanciacionUCM>();
+builder.Services.AddTransient<ITipoFinanciacion, AccesoDatos.Movilidad.TipoFinanciacion>();
+builder.Services.AddTransient<IFinanciacionExterna, AccesoDatos.Movilidad.FinanciacionExterna>();
+builder.Services.AddTransient<IEstadosPostulacion, AccesoDatos.Movilidad.EstadosPostulacion>();
+
+builder.Services.AddTransient<IBeneficiosPostulacion, AccesoDatos.Movilidad.BeneficiosPostulacion>();
+builder.Services.AddTransient<ICumplimientoCondiciones, AccesoDatos.Movilidad.CumplimientoCondicion>();
+
 
 builder.Services.AddAutoMapper(config => {
     config.RegisterApiMappings();
