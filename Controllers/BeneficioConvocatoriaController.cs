@@ -1,5 +1,6 @@
 ﻿using Apis.Contrats;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ModeloDatos.DTO;
@@ -18,7 +19,7 @@ namespace Apis.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-
+    [DisableCors]
     public class BeneficioConvocatoriaController : Controller
     {
         
@@ -112,6 +113,43 @@ namespace Apis.Controllers
                 }
 
                 List<BeneficiosDTO> beneficios = await _IBeneficios.ConsultarBeneficiosEspecifico(id);
+                if (beneficios != null)
+                {
+
+                    return Ok(new DataResponse<List<BeneficiosDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.BusquedaExitosa,
+                        Datos = beneficios
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
+        #region Consultar Beneficios por nombre o nombre de la convocatoria
+        [HttpGet("Consultar_BeneficiosIdConvocatoria")]
+        [ProducesResponseType<DataResponse<BeneficiosDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarBeneficiosIdConvocatoria(int? idConvocatoria = null)
+        {
+            try
+            {
+
+                if (string.IsNullOrEmpty(idConvocatoria.ToString()) == null && idConvocatoria != null)
+                {
+                    return BadRequest("Debe especificar la convocatoria");
+                }
+
+                List<BeneficiosDTO> beneficios = await _IBeneficios.ConsultarBeneficiosIdConvocatoria(idConvocatoria);
                 if (beneficios != null)
                 {
 

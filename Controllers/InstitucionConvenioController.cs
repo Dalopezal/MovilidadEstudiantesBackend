@@ -27,7 +27,7 @@ namespace Apis.Controllers
         }
 
         #region Consultar Institucion Convenio
-        [HttpGet("Consultar_ConsultarInstitucionConvenioInstitucionConvenio")]
+        [HttpGet("Consultar_ConsultarInstitucionConvenio")]
         [ProducesResponseType<DataResponse<List<InstitucionConvenioDTO>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]

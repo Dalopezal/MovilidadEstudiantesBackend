@@ -68,7 +68,7 @@ namespace Apis.Controllers
             try
             {
 
-                if (string.IsNullOrEmpty(IdConvocatoria.ToString()) == null || IdConvocatoria!=null)
+                if (string.IsNullOrEmpty(IdConvocatoria.ToString()) == null || IdConvocatoria==null)
                 {
                     return BadRequest("Debe especificar el id de la convocatoria.");
                 }
@@ -105,7 +105,7 @@ namespace Apis.Controllers
             try
             {
 
-                if (string.IsNullOrEmpty(id.ToString()) == null && id != null)
+                if (string.IsNullOrEmpty(id.ToString()) == null && id == null)
                 {
                     return BadRequest("Debe especificar la postulacion");
                 }
@@ -129,6 +129,37 @@ namespace Apis.Controllers
             {
                 return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
             }
+        }
+        #endregion
+
+
+        #region Ingresar Postulacion
+        [HttpPost("crear_Postulacion")]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<DataResponse<PostulacionDTO>>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> IngresarPostulaciones([FromBody] PostulacionDTO nuevo)
+        {
+            try
+            {
+                bool result = await _IPostulaciones.IngresarPostulaciones(nuevo);
+
+                if (result == false)
+                {
+
+                    return BadRequest(ModeloDatos.Utilidades.Mensaje.MensajePostulacion.IngresoExitosa);
+                }
+
+                return Ok(new DataResponse<bool>
+                {
+                    Exito = ModeloDatos.Utilidades.Mensaje.MensajePostulacion.IngresoErrada,
+                    Datos = result
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.OcurrioError);
+            }
+
         }
         #endregion
     }

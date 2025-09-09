@@ -90,6 +90,49 @@ namespace Apis.Controllers
         }
         #endregion
 
+        #region Consultar convocatoria por filtros
+        [HttpGet("Consultar_ConvocatoriaGeneral")]
+        [ProducesResponseType<DataResponse<ConvocatoriaDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarConvocatoriaGeneral(string? NombreConvocatoria = null,
+            DateOnly? FechaInicio = null, DateOnly? FechaFinal = null, int? IdModalidad = null)
+        {
+            try
+            {
+
+                if ( (string.IsNullOrEmpty(NombreConvocatoria) == null) ||
+                    (string.IsNullOrEmpty(IdModalidad.ToString()) == null && IdModalidad == null) ||
+                    (string.IsNullOrEmpty(FechaInicio.ToString()) == null && FechaInicio != null) ||
+                    (string.IsNullOrEmpty(FechaFinal.ToString()) == null && FechaFinal != null))
+
+                {
+                    return BadRequest("Debe especificar al menos un parametro de busqueda");
+                }
+
+                List<ConvocatoriaDTO> convocatoria = await _IConvocatoria.ConsultarConvocatoriaGeneral(NombreConvocatoria,
+                    FechaInicio, FechaFinal, IdModalidad);
+                if (convocatoria != null)
+                {
+
+                    return Ok(new DataResponse<List<ConvocatoriaDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.BusquedaExitosa,
+                        Datos = convocatoria
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
 
         #region Crear Convocatoria
         [HttpPost("crear_Convocatoria")]

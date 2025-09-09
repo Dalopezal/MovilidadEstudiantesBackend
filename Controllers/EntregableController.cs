@@ -1,5 +1,6 @@
 ﻿using AccesoDatos.Movilidad;
 using Apis.Contrats;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using ModeloDatos.DTO;
 using ModeloDatos.IModelos;
@@ -11,6 +12,7 @@ namespace Apis.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class EntregableController : Controller
     {
 
@@ -104,6 +106,44 @@ namespace Apis.Controllers
                 }
 
                 List<EntregableDTO> entregable = await _IEntregable.ConsultarEntregableEspecifico(id);
+                if (entregable != null)
+                {
+
+                    return Ok(new DataResponse<List<EntregableDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajeEntregable.BusquedaExitosa,
+                        Datos = entregable
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeEntregable.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
+
+        #region Consultar entregable por id Convocatoria
+        [HttpGet("Consultar_EntregableConvocataria")]
+        [ProducesResponseType<DataResponse<EntregableDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarEntregableConvocataria(int? idConvocatoria = null)
+        {
+            try
+            {
+
+                if (string.IsNullOrEmpty(idConvocatoria.ToString()) == null && idConvocatoria != null)
+                {
+                    return BadRequest("Debe especificar la convocatoria");
+                }
+
+                List<EntregableDTO> entregable = await _IEntregable.ConsultarEntregableConvocataria(idConvocatoria);
                 if (entregable != null)
                 {
 

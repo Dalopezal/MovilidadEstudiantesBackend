@@ -94,7 +94,7 @@ namespace Apis.Controllers
         #endregion
 
         #region Consultar cumplimiento por nombre o nombre de la convocatoria
-        [HttpGet("ConsultarCumplimientoCondicionesEspecifico")]
+        [HttpGet("Consultar_CumplimientoCondicionesEspecifico")]
         [ProducesResponseType<DataResponse<CumplimientoCondicionesDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
@@ -108,6 +108,42 @@ namespace Apis.Controllers
                 }
 
                 List<CumplimientoCondicionesDTO> beneficios = await _ICumplimientoCondiciones.ConsultarCumplimientoCondicionesEspecifico(id);
+                if (beneficios != null)
+                {
+                    return Ok(new DataResponse<List<CumplimientoCondicionesDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajeCumplimientoCondicion.BusquedaExitosa,
+                        Datos = beneficios
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeCumplimientoCondicion.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
+
+        #region Consultar cumplimiento por nombre o nombre de la convocatoria
+        [HttpGet("Consultar_CumplimientoCondicionesPostulacion")]
+        [ProducesResponseType<DataResponse<CumplimientoCondicionesDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarCumplimientoCondicionesPostulacion(int? idPostulacion = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(idPostulacion.ToString()) == null && idPostulacion == null)
+                {
+                    return BadRequest("Debe especificar el cumplimiento");
+                }
+
+                List<CumplimientoCondicionesDTO> beneficios = await _ICumplimientoCondiciones.ConsultarCumplimientoCondicionesPostulacion(idPostulacion);
                 if (beneficios != null)
                 {
                     return Ok(new DataResponse<List<CumplimientoCondicionesDTO>>

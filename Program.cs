@@ -1,7 +1,6 @@
-using Apis.Extensions;
+﻿using Apis.Extensions;
 using AccesoDatos.Extensions;
 using ModeloDatos.IModelos;
-using System.Text;
 using ModeloDatos.Utilidades;
 using Microsoft.EntityFrameworkCore;
 using AccesoDatos;
@@ -11,19 +10,15 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ModeloDatos.Modelos.DbMovilidadContext>(options =>
+// Configuración de DbContext
+builder.Services.AddDbContext<ModeloDatos.Modelos.MovilidadDesarrolloContext>(options =>
 {
-    if (builder.Environment.IsProduction())
-    {
-        options.UseSqlServer(Conexion.ConexionSqlServerBd);
-    }
-    else if (builder.Environment.IsDevelopment())
-    {
-        options.UseSqlServer(Conexion.ConexionSqlServerBd);
-    }
+    options.UseSqlServer(Conexion.ConexionSqlServerBd);
 });
 
-builder.Services.AddControllers();
+// Inyección de dependencias 
+builder.Services.AddTransient<IBeneficios, AccesoDatos.Movilidad.Beneficios>();
+builder.Services.AddTransient<ICumplimientoCondiciones, AccesoDatos.Movilidad.CumplimientoCondicion>();
 builder.Services.AddTransient<IBeneficios, AccesoDatos.Movilidad.Beneficios>();
 builder.Services.AddTransient<ICategoriaMovilidad, AccesoDatos.Movilidad.CategoriaMovilidad>();
 builder.Services.AddTransient<ICiudad, AccesoDatos.Movilidad.Ciudad>();
@@ -40,22 +35,26 @@ builder.Services.AddTransient<IEntregable, AccesoDatos.Movilidad.Entregable>();
 builder.Services.AddTransient<IPais, AccesoDatos.Movilidad.Pais>();
 builder.Services.AddTransient<IConvocatoria, AccesoDatos.Movilidad.Convocatoria>();
 builder.Services.AddTransient<IPostulaciones, AccesoDatos.Movilidad.Postulacion>();
-
 builder.Services.AddTransient<IFinanciacionUCM, AccesoDatos.Movilidad.FinanciacionUCM>();
 builder.Services.AddTransient<ITipoFinanciacion, AccesoDatos.Movilidad.TipoFinanciacion>();
 builder.Services.AddTransient<IFinanciacionExterna, AccesoDatos.Movilidad.FinanciacionExterna>();
 builder.Services.AddTransient<IEstadosPostulacion, AccesoDatos.Movilidad.EstadosPostulacion>();
-
 builder.Services.AddTransient<IBeneficiosPostulacion, AccesoDatos.Movilidad.BeneficiosPostulacion>();
 builder.Services.AddTransient<ICumplimientoCondiciones, AccesoDatos.Movilidad.CumplimientoCondicion>();
 
+builder.Services.AddTransient<IConsultaCategoriaMovilidad, AccesoDatos.Movilidad.ConsultaCategoriaModalidad>();
+builder.Services.AddTransient<IEntregablePostulacion, AccesoDatos.Movilidad.EntregablePostulacion>();
+builder.Services.AddTransient<INotificaciones, AccesoDatos.Movilidad.Notificaciones>();
+builder.Services.AddTransient<IInstitucionConvenio, AccesoDatos.Movilidad.InstitucionConvenio>();
 
-builder.Services.AddAutoMapper(config => {
+// AutoMapper
+builder.Services.AddAutoMapper(config =>
+{
     config.RegisterApiMappings();
     config.RegisterAccessMappings();
 });
 
-
+// Configuración de JSON
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
     {
@@ -63,44 +62,34 @@ builder.Services.AddControllers()
         opt.JsonSerializerOptions.WriteIndented = true;
     });
 
-
-// Add services to the container.
-
-builder.Services.AddControllers()
-.AddJsonOptions(opciones => opciones.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never);
+// --------------------- CORS: definir una única política ---------------------
+var allowedOrigins = new[]
+{
+    "http://localhost:4200",      // tu frontend durante desarrollo (ajusta si usas otro puerto)
+    "http://localhost:5173",      // si usas Vite (opcional)
+    "https://tudominio-frontend"  // producción (ajusta o añade el dominio real)
+};
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Development", policy =>
+    options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.AllowAnyOrigin();
-        policy.AllowAnyMethod();
-        policy.AllowAnyHeader();
-    });
-
-    options.AddPolicy("Production", policy =>
-    {
-        policy.AllowAnyOrigin();
-        policy.AllowAnyMethod();
-        policy.AllowAnyHeader();
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              // .AllowCredentials() // descomenta solo si necesitas cookies/credenciales y recuerda usar orígenes específicos (no "*")
+              ;
     });
 });
+// ---------------------------------------------------------------------------
 
-builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-
-// Configure the HTTP request pipeline.
+// Swagger en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -109,6 +98,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+// APLICAR LA POLÍTICA CORS UNA SOLA VEZ
+app.UseCors("CorsPolicy");
+
+// Middlewares de autenticación/autorización si aplica
 app.UseAuthorization();
 
 app.MapControllers();
