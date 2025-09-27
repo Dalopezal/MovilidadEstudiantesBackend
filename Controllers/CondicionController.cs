@@ -1,4 +1,5 @@
-﻿using Apis.Contrats;
+﻿using AccesoDatos.Movilidad;
+using Apis.Contrats;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -205,5 +206,32 @@ namespace Apis.Controllers
 
         }
         #endregion
+
+        #region Eliminar Condicion
+        [HttpPatch("Eliminar_Condicion/{id}")]
+        public async Task<IActionResult> EliminarCondicion(int id)
+        {
+            try
+            {
+                bool eliminado = await _ICondicion.EliminarCondicion(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeCondicion.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeCondicion.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeCondicion.OcurrioError);
+            }
+        }
+        #endregion
+
     }
 }

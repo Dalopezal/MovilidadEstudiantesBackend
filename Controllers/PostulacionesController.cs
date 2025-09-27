@@ -133,6 +133,80 @@ namespace Apis.Controllers
         #endregion
 
 
+        #region Consultar postulacion por filtros
+        [HttpGet("Consultar_PostulacionGeneral")]
+        [ProducesResponseType<DataResponse<PostulacionDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarPostulacionGeneral(string? Documento = null, string? NombreCompleto = null,
+            DateOnly? FechaInicio = null, DateOnly? FechaFinal = null, int? IdModalidad = null)
+        {
+            try
+            {
+
+               
+
+                List<PostulacionDTO> postulacion = await _IPostulaciones.ConsultarPostulacionGeneral(Documento, NombreCompleto, FechaInicio,
+                    FechaFinal, IdModalidad);
+                if (postulacion != null)
+                {
+
+                    return Ok(new DataResponse<List<PostulacionDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajePostulacion.BusquedaExitosa,
+                        Datos = postulacion
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajePostulacion.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
+
+        #region Consultar Bitacora postulacion por id
+        [HttpGet("Consultar_PostulacionBitacora")]
+        [ProducesResponseType<DataResponse<BitacoraPostulacionesDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarPostulacionBitacora(int? id = null)
+        {
+            try
+            {
+
+                if (string.IsNullOrEmpty(id.ToString()) == null && id == null)
+                {
+                    return BadRequest("Debe especificar la postulacion");
+                }
+
+                List<BitacoraPostulacionesDTO> postulacion = await _IPostulaciones.ConsultarPostulacionBitacora(id);
+                if (postulacion != null)
+                {
+
+                    return Ok(new DataResponse<List<BitacoraPostulacionesDTO>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajePostulacion.BusquedaExitosa,
+                        Datos = postulacion
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajePostulacion.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
+
         #region Ingresar Postulacion
         [HttpPost("crear_Postulacion")]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]

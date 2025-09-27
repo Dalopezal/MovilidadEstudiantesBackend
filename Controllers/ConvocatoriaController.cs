@@ -52,6 +52,42 @@ namespace Apis.Controllers
 
 
 
+        #region Consultar convocatoria por id
+        [HttpGet("ConsultarConvocatoria_Tipo")]
+        [ProducesResponseType<DataResponse<VswConsutarConvocatoriaModalidadTipoDTOcs>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConsultarConvocatoriaTipo(String? NombreTipo = null)
+        {
+            try
+            {
+
+                if (string.IsNullOrEmpty(NombreTipo.ToString()) == null && (NombreTipo != "Saliente" || NombreTipo != "Entrante"))
+                {
+                    return BadRequest("Debe especificar el tipo convocatoria");
+                }
+
+                List<VswConsutarConvocatoriaModalidadTipoDTOcs> convocatoria = await _IConvocatoria.ConsultarConvocatoriaTipo(NombreTipo);
+                if (convocatoria != null)
+                {
+
+                    return Ok(new DataResponse<List<VswConsutarConvocatoriaModalidadTipoDTOcs>>
+                    {
+                        Exito = ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.BusquedaExitosa,
+                        Datos = convocatoria
+                    });
+                }
+                else
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.BusquedaErrada);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ModeloDatos.Utilidades.Mensaje.ErrorGeneral);
+            }
+        }
+        #endregion
 
         #region Consultar convocatoria por id
         [HttpGet("Consultar_ConvocatoriaEspecifico")]
@@ -92,11 +128,11 @@ namespace Apis.Controllers
 
         #region Consultar convocatoria por filtros
         [HttpGet("Consultar_ConvocatoriaGeneral")]
-        [ProducesResponseType<DataResponse<ConvocatoriaDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<DataResponse<VswConsutarConvocatoriaModalidadTipoDTOcs>>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConsultarConvocatoriaGeneral(string? NombreConvocatoria = null,
-            DateOnly? FechaInicio = null, DateOnly? FechaFinal = null, int? IdModalidad = null)
+            DateOnly? FechaInicio = null, DateOnly? FechaFinal = null, int? IdModalidad = null, String? NombreTipo = null)
         {
             try
             {
@@ -104,18 +140,19 @@ namespace Apis.Controllers
                 if ( (string.IsNullOrEmpty(NombreConvocatoria) == null) ||
                     (string.IsNullOrEmpty(IdModalidad.ToString()) == null && IdModalidad == null) ||
                     (string.IsNullOrEmpty(FechaInicio.ToString()) == null && FechaInicio != null) ||
-                    (string.IsNullOrEmpty(FechaFinal.ToString()) == null && FechaFinal != null))
+                    (string.IsNullOrEmpty(FechaFinal.ToString()) == null && FechaFinal != null) ||
+                    (string.IsNullOrEmpty(NombreTipo.ToString()) == null && (NombreTipo != "Saliente" || NombreTipo != "Entrante")))
 
                 {
                     return BadRequest("Debe especificar al menos un parametro de busqueda");
                 }
 
-                List<ConvocatoriaDTO> convocatoria = await _IConvocatoria.ConsultarConvocatoriaGeneral(NombreConvocatoria,
-                    FechaInicio, FechaFinal, IdModalidad);
+                List<VswConsutarConvocatoriaModalidadTipoDTOcs> convocatoria = await _IConvocatoria.ConsultarConvocatoriaGeneral(NombreConvocatoria,
+                    FechaInicio, FechaFinal, IdModalidad, NombreTipo);
                 if (convocatoria != null)
                 {
 
-                    return Ok(new DataResponse<List<ConvocatoriaDTO>>
+                    return Ok(new DataResponse<List<VswConsutarConvocatoriaModalidadTipoDTOcs>>
                     {
                         Exito = ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.BusquedaExitosa,
                         Datos = convocatoria
@@ -207,5 +244,32 @@ namespace Apis.Controllers
 
         }
         #endregion
+
+        #region eliminar Convocatoria
+        [HttpPatch("Eliminar_Convocatoria/{id}")]
+        public async Task<IActionResult> EliminarConvocatoria(int id)
+        {
+            try
+            {
+                bool eliminado = await _IConvocatoria.EliminarConvocatoria(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeConvocatoria.OcurrioError);
+            }
+        }
+        #endregion
+
     }
 }

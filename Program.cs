@@ -47,6 +47,8 @@ builder.Services.AddTransient<IEntregablePostulacion, AccesoDatos.Movilidad.Entr
 builder.Services.AddTransient<INotificaciones, AccesoDatos.Movilidad.Notificaciones>();
 builder.Services.AddTransient<IInstitucionConvenio, AccesoDatos.Movilidad.InstitucionConvenio>();
 
+builder.Services.AddTransient<IFinanciacionExterna, AccesoDatos.Movilidad.FinanciacionExterna>();
+
 // AutoMapper
 builder.Services.AddAutoMapper(config =>
 {

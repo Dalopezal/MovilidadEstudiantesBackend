@@ -87,7 +87,7 @@ namespace Apis.Controllers
         }
         #endregion
 
-        #region Actualizar Beneficio
+        #region Actualizar Entregable
         [HttpPut("Actualiza_EntregablePostulacion")]
         [ProducesResponseType<DataResponse<bool>>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
@@ -128,6 +128,32 @@ namespace Apis.Controllers
                 }
             }
 
+        }
+        #endregion
+
+        #region eliminar Entregable
+        [HttpPatch("Eliminar_EntregablePostulacion/{id}")]
+        public async Task<IActionResult> EliminarEntregablePostulacion(int id)
+        {
+            try
+            {
+                bool eliminado = await _IEntregablePostulacion.EliminarEntregablePostulacion(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeEntregablesPostulacion.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeEntregablesPostulacion.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeEntregablesPostulacion.OcurrioError);
+            }
         }
         #endregion
     }

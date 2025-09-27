@@ -197,5 +197,32 @@ namespace Apis.Controllers
 
         }
         #endregion
+
+
+        #region eliminar Beneficios
+        [HttpPatch("Eliminar_Beneficios/{id}")]
+        public async Task<IActionResult> EliminarBeneficios(int id)
+        {
+            try
+            {
+                bool eliminado = await _IBeneficiosPostulacion.EliminarBeneficios(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeBeneficiosPoastulacion.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeBeneficiosPoastulacion.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeEntregable.OcurrioError);
+            }
+        }
+        #endregion
     }
 }

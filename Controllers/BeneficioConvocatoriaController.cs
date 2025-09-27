@@ -1,4 +1,5 @@
-﻿using Apis.Contrats;
+﻿using AccesoDatos.Movilidad;
+using Apis.Contrats;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -241,6 +242,32 @@ namespace Apis.Controllers
                 }
             }
                 
+        }
+        #endregion
+
+        #region eliminar Benerficios
+        [HttpPatch("Eliminar_Beneficios/{id}")]
+        public async Task<IActionResult> EliminarBeneficios(int id)
+        {
+            try
+            {
+                bool eliminado = await _IBeneficios.EliminarBeneficios(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeBeneficios.OcurrioError);
+            }
         }
         #endregion
 

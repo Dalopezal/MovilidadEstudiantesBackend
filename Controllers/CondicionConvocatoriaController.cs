@@ -1,4 +1,5 @@
-﻿using Apis.Contrats;
+﻿using AccesoDatos.Movilidad;
+using Apis.Contrats;
 using Microsoft.AspNetCore.Mvc;
 using ModeloDatos.DTO;
 using ModeloDatos.IModelos;
@@ -265,6 +266,33 @@ namespace Apis.Controllers
                 }
             }
 
+        }
+        #endregion
+
+
+        #region Eliminar Condiciones Convocatoria
+        [HttpPatch("Eliminar_CondicionesConvocatoria/{idCondicion},{IdConvocatoria}")]
+        public async Task<IActionResult> EliminarCondicionesConvocatoria(int idCondicion, int IdConvocatoria)
+        {
+            try
+            {
+                bool eliminado = await _ICondicionesConvocatoria.EliminarCondicionesConvocatoria(idCondicion, IdConvocatoria);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeCondicionConvocatoria.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeCondicionConvocatoria.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeCondicionConvocatoria.OcurrioError);
+            }
         }
         #endregion
     }

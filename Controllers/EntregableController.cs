@@ -2,8 +2,10 @@
 using Apis.Contrats;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ModeloDatos.DTO;
 using ModeloDatos.IModelos;
+using ModeloDatos.Utilidades;
 
 namespace Apis.Controllers
 {
@@ -238,5 +240,39 @@ namespace Apis.Controllers
 
         }
         #endregion
+
+
+        #region eliminar Entregable
+        [HttpPatch("Eliminar_Entregable/{id}")]
+        public async Task<IActionResult> EliminarUsuario(int id)
+        {
+            try
+            {
+               bool eliminado = await _IEntregable.EliminarEntregable(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeEntregable.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeEntregable.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeEntregable.OcurrioError);
+            }
+        }
+        #endregion
+
+
+
+
+
+
+
     }
 }

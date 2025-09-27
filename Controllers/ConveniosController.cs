@@ -1,4 +1,5 @@
-﻿using Apis.Contrats;
+﻿using AccesoDatos.Movilidad;
+using Apis.Contrats;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -202,6 +203,32 @@ namespace Apis.Controllers
                 }
             }
 
+        }
+        #endregion
+
+        #region eliminar Convenio
+        [HttpPatch("Eliminar_Entregable/{id}")]
+        public async Task<IActionResult> EliminarConvenio(int id)
+        {
+            try
+            {
+                bool eliminado = await _IConvenio.EliminarConvenio(id);
+
+                if (!eliminado)
+                {
+                    return NotFound(ModeloDatos.Utilidades.Mensaje.MensajeConvenios.OcurrioError);
+                }
+
+                return Ok(new
+                {
+                    exito = ModeloDatos.Utilidades.Mensaje.MensajeConvenios.ActualizacionExitosa,
+                    datos = eliminado
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ModeloDatos.Utilidades.Mensaje.MensajeConvenios.OcurrioError);
+            }
         }
         #endregion
     }
